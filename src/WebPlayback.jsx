@@ -18,6 +18,7 @@ function WebPlayback(props) {
     const [is_active, setActive] = useState(false);
     const [player, setPlayer] = useState(undefined);
     const [current_track, setTrack] = useState(track);
+    const [volume, setVolume] = useState(.1)
 
     useEffect(() => {
 
@@ -36,6 +37,10 @@ function WebPlayback(props) {
             });
 
             setPlayer(player);
+
+            player.setVolume(volume).then(() => {
+                console.log('Volume updated!');
+              });
 
             player.addListener('ready', ({ device_id }) => {
                 console.log('Ready with Device ID', device_id);
@@ -64,6 +69,29 @@ function WebPlayback(props) {
 
         };
     }, []);
+    const handleVolumeChangeUp = (() => {
+        let currentVolume
+        player.getVolume().then(volume => {
+            let volume_percentage = volume * 100;
+            console.log(`The volume of the player is ${volume_percentage}%`);
+            player.setVolume(volume + .1)
+            volume_percentage = (volume -.1) * 100;
+            console.log(`The volume of the player is changed to ${volume_percentage}%`);
+            setVolume(volume + .1)
+          });
+    })
+
+    const handleVolumeChangeDown = (() => {
+        let currentVolume
+        player.getVolume().then(volume => {
+            let volume_percentage = volume * 100;
+            console.log(`The volume of the player is ${volume_percentage}%`);
+            player.setVolume(volume - .1)
+            volume_percentage = (volume -.1) * 100;
+            console.log(`The volume of the player is changed to ${volume_percentage}%`);
+            setVolume(volume - .1)
+          });
+    })
 
     if (!is_active) { 
         return (
@@ -97,6 +125,8 @@ function WebPlayback(props) {
                             <button className="btn-spotify" onClick={() => { player.nextTrack() }} >
                                 &gt;&gt;
                             </button>
+                            <button className="btn-spotify" onClick={() => { handleVolumeChangeDown()}}>-</button>
+                            <button className="btn-spotify" onClick={() => { handleVolumeChangeUp()}}>+</button>
                         </div>
                     </div>
                 </div>
